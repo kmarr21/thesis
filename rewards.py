@@ -1,4 +1,4 @@
-// From Daw et al. (2011)
+## From Daw et al. (2011)
 
 const Rewards = [
   [0.6  , 0.51 , 0.387, 0.388],
