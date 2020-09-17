@@ -1,0 +1,10 @@
+
+# Numeric computing packages
+numpy
+scipy
+pandas
+numba
+
+# Visualization packages (for figures)
+# matplotlib
+# seaborn
