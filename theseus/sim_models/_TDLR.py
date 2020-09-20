@@ -1,5 +1,5 @@
 import numpy as np
-from theseus.helper import inv_logit
+from theseus._helper import inv_logit
 
 
 class TDLR(object):
