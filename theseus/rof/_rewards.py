@@ -807,3 +807,8 @@ Rewards = [
   [0.456, 0.458, 0.553, 0.347],
   [0.463, 0.407, 0.609, 0.328]
 ];
+
+# function to return section of rewards
+def getRewards(int):
+  return Rewards[:int]
+
