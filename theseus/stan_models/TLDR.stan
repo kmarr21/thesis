@@ -31,8 +31,8 @@ transformed parameters {
 
     beta1 = Phi_approx(beta1_pr) * 20;
     beta2 = Phi_approx(beta2_pr) * 20;
-    etaC = Phi_approx (etaC_pr);
-    etaR = Phi_approx (etaR_pr);
+    etaC = Phi_approx(etaC_pr);
+    etaR = Phi_approx(etaR_pr);
 }
 model {
 
