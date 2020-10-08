@@ -35,7 +35,7 @@ model {
     // Priors
     beta1_pr ~ normal(0,1); 
     beta2_pr ~ normal(0,1); 
-    eta2_pr ~ normal(0,1); 
+    eta_pr ~ normal(0,1); 
 
     // Initialize values
     vector[6] Q = rep_vector(0.5,6); // Model-based Q-values
