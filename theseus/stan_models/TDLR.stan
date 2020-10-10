@@ -8,18 +8,16 @@ data {
     int<lower=1, upper=2> Y[max(T),2]; // choice data for each level (2 = right, 1 = left)
     int<lower=0, upper=1> O[max(T)]; // outcome data for level 1 choice (1 = right, 0 = left)
     int<lower=0, upper=1> reward[max(T)]; // trial reward
-    int<lower=0, upper=1> LR[max(T)]; // trial learning rate -- Need this here?
 } 
 transformed data {
-    // Do I need to vectorize my choices? I am still a bit confused on this?
-    // I feel like I need to vectorize Y....
+    // 
 }
 parameters {
     // Subject-level parameters
     real beta1_pr;
     real beta2_pr;
     real etaC_pr; 
-    real etaR_pr;
+    real etaR_pr;s
 }
 transformed parameters {
     // 
@@ -47,6 +45,7 @@ model {
 
     vector[T] deV1 = rep_vector(0, T); // difference in value, level 1
     vector[T] deV2 = rep_vector(0, T); // difference in value, level 2
+    vector[T] LR = rep_vector(0, T);
 
     // Iterate through trials
     for (i in 1:T) {
