@@ -19,8 +19,7 @@ parameters {
     real eta_pr; 
 }
 transformed parameters {
-    // I am still confused here?
-
+    //
     real<lower=0, upper=20> beta1;
     real<lower=0, upper=20> beta2;
     real<lower=0, upper=1> eta;
