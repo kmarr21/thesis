@@ -45,7 +45,7 @@ model {
 
     vector[T] deV1 = rep_vector(0, T); // difference in value, level 1
     vector[T] deV2 = rep_vector(0, T); // difference in value, level 2
-    vector[T] LR = rep_vector(0, T);
+    vector[T] LR = rep_vector(0, T); // trial learning rate: can be common or rare
 
     // Iterate through trials
     for (i in 1:T) {
