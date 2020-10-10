@@ -1,4 +1,4 @@
-// DaSilva TDLR Model
+// DaSilva TLDR Model
 
 data {
     // Metadata
@@ -22,8 +22,7 @@ parameters {
     real etaR_pr;
 }
 transformed parameters {
-    // I am still confused here?
-
+    // 
     real<lower=0, upper=20> beta1;
     real<lower=0, upper=20> beta2;
     real<lower=0, upper=1> etaC;
@@ -31,8 +30,8 @@ transformed parameters {
 
     beta1 = Phi_approx(beta1_pr) * 20;
     beta2 = Phi_approx(beta2_pr) * 20;
-    etaC = Phi_approx(etaC_pr);
-    etaR = Phi_approx(etaR_pr);
+    etaC = Phi_approx (etaC_pr);
+    etaR = Phi_approx (etaR_pr);
 }
 model {
 
@@ -57,18 +56,11 @@ model {
 
         // Choice likelihood for level 1
         deV1[i] = Q[2] - Q[1];
-        Y[i,1] ~ bernoulli_logit( beta1 * deV1);
 
         // Observe level 2 
         // Choice likelihood for level 2
-        if (O[i] == 0) {
-            // went Left
-            deV2[i] = Q[4] - Q[3]
-        } else {
-            // went Right
-            deV2[i] = Q[6] - Q[5]
-        }
-        Y[i,2] ~ bernoulli_logit( beta2 * deV2 );
+        // Left: O[i] = 0, Right: O[i] = 1
+        deV2[i] = Q[(O[i]+ 4) + (2*O[i])] - Q[(O[i]+ 3) + (2*O[i])]
 
         if (Y[i,1] == O[i]) {
             LR[i] = etaC; // common transition
@@ -79,5 +71,7 @@ model {
         // Note: using assumption O data comes in as 0 (left) or 1 (right) from stage 1 choice
         Q[(O[i]+ 3) + (2*O[i])] += LR[i] * (reward[i] - Q[(O[i]+3) + (2*O[i])]);
     }
-
+    // Assign likelihoods
+    Y[:,1] ~ bernoulli_logit( beta1 * deV1);
+    Y[:,2] ~ bernoulli_logit( beta2 * deV2 );
 }
