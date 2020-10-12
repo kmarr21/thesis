@@ -31,7 +31,10 @@ transformed parameters {
   real<lower=0, upper=20> beta1;
   real<lower=0, upper=20> beta2;
   real<lower=0, upper=1> w;
-  real<lower=0, upper=5> p;
+  
+  // I'm a bit confused here on how to set the boundary for p . . . 
+  // Needs to be able to be >0 (perseveration) and <0 (switching)
+  real p;
 
   beta1 = Phi_approx(beta1_pr) * 20;
   beta2 = Phi_approx(beta2_pr) * 20;
