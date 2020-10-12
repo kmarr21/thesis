@@ -21,7 +21,7 @@ parameters {
   real beta1_pr; // first inv. temp
   real beta2_pr; // second inv. temp
   real w_pr; // weight
-  real p_pr; // 
+  real p_pr; // perseveration
 }
 transformed parameters {
   // Subject-level parameters
