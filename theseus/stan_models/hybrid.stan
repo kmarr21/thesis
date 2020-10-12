@@ -40,7 +40,7 @@ transformed parameters {
   beta2 = Phi_approx(beta2_pr) * 20;
   eta1 = Phi_approx(eta1_pr);
   eta2 = Phi_approx(eta2_pr);
-  p = Phi_approx(p) * 5;
+  p = Phi_approx(p);
   w = Phi_approx(w);
   lambda = Phi_approx(lambda);
 }
