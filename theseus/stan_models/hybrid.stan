@@ -31,10 +31,7 @@ transformed parameters {
   real<lower=0, upper=20> beta1;
   real<lower=0, upper=20> beta2;
   real<lower=0, upper=1> w;
-  
-  // I'm a bit confused here on how to set the boundary for p . . . 
-  // Needs to be able to be >0 (perseveration) and <0 (switching)
-  real p;
+  real<lower=0, upper=1> p;
 
   beta1 = Phi_approx(beta1_pr) * 20;
   beta2 = Phi_approx(beta2_pr) * 20;
@@ -63,12 +60,16 @@ model {
   vector[T] deV1 = rep_vector(0, T); // difference in value, level 1
   vector[T] deV2 = rep_vector(0, T); // difference in value, level 2
   int m; // rep(a) value: 1 if a is a top-stage action and is the same one as was chosen on the previous trial
+  
+  // NOTES:
+  // This now matches how I wrote my python hybrid model, but I'm wondering if I should change it to
+  // more match what you wrote in your email: opinions on this?
 
   // loop through the trials
   for i in (1:T) {
 
     // Compute first hybrid value
-    hybrid[1] = w*0.4*fmax(MB[1], MB[2]) + (1-w)*fmax(MB[3], MB[4]);
+    hybrid[1] = w*0.4*(fmax(MB[3], MB[4]) - fmax(MB[1], MB[2])) + (1-w)*(MF[2] - MF[1]);
 
     // Choice likelihood for level 1
     if (t == 1) {
