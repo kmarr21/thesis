@@ -60,10 +60,6 @@ model {
   vector[T] deV1 = rep_vector(0, T); // difference in value, level 1
   vector[T] deV2 = rep_vector(0, T); // difference in value, level 2
   int m; // rep(a) value: 1 if a is a top-stage action and is the same one as was chosen on the previous trial
-  
-  // NOTES:
-  // This now matches how I wrote my python hybrid model, but I'm wondering if I should change it to
-  // more match what you wrote in your email: opinions on this?
 
   // loop through the trials
   for i in (1:T) {
