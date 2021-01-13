@@ -2,10 +2,9 @@ import numpy as np
 from theseus._helper import inv_logit
 
 
-# Hybrid model
 class Hybrid(object):
     
-    def __init__(self, b1, b2, a1, a2, w, lam, p):
+    def __init__(self, b1, b2, a1, a2, w, p):
         
         ## Define parameters.
         self.b1 = b1
@@ -13,21 +12,16 @@ class Hybrid(object):
         self.a1 = a1
         self.a2 = a2
         self.w = w
-        self.l = lam
         self.p = p
         
         ## Initialize Q-values.
         self.MB = None
         self.MF = None
-        self.hybrid = None
         
-    def train(self, R, T=[[0.7,0.3],[0.3,0.7]], reset=False):
+    def train(self, R, reset=False):
         
         ## Error-catching: rewards.
         R = np.array(R)
-        
-        ## Error-catching: transition probabilities.
-        T = np.array(T)
         
         ## Initialize Q-values.
         if self.MB is None or reset:
@@ -51,7 +45,7 @@ class Hybrid(object):
             if i == 0:
                 theta = inv_logit( self.b1 * hybrid1 )
             else:
-                m = -1 if Y[i-1,0] == 0 else 1
+                m = -1 if (Y[i-1,0] == 0) else 1
                 theta = inv_logit( self.b1 * hybrid1 + self.p*m )
 
             ## 1 (0) => pi = -1
@@ -74,9 +68,9 @@ class Hybrid(object):
             
             ## Stage 2: Observe outcome.
             r[i] = R[i,S-1,Y[i,1]]
-    
+            
             ## Update Model-Free values
-            self.MF[Y[i,0]] += self.a1 * (self.MB[S-1,Y[i,1]] - self.MF[Y[i,0]]) + self.a1*self.l*(r[i] - self.MB[S-1,Y[i,1]])
+            self.MF[Y[i,0]] += self.a1 * (self.MB[S-1,Y[i,1]] - self.MF[Y[i,0]]) + self.a1*(r[i] - self.MB[S-1,Y[i,1]])
             
             ## Update Model-Based values
             self.MB[S-1,Y[i,1]] += self.a2 * (r[i] - self.MB[S-1, Y[i,1]])
