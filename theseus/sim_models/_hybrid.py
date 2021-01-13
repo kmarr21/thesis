@@ -45,7 +45,7 @@ class Hybrid(object):
             if i == 0:
                 theta = inv_logit( self.b1 * hybrid1 )
             else:
-                m = -1 if (Y[i-1,0] == 0) else 1
+                m = 0 if (Y[i-1,0] == 0) else 1
                 theta = inv_logit( self.b1 * hybrid1 + self.p*m )
 
             ## 1 (0) => pi = -1
