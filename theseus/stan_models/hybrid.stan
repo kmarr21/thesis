@@ -39,14 +39,13 @@ transformed parameters {
   w = Phi_approx(w_pr);
 }
 model {
-  // define and initialize values
-  vector[4] Q = rep_vector(0.5,4); // Q values (Left: 1, 2, Right: 3, 4)
-  vector[2] MB = rep_vector(0.5,2); // model-based values
-  vector[2] MF = rep_vector(0.5,2); // model-free values
+    // define and initialize values
+    vector[4] Q = rep_vector(0.5,4); // model-based Q values (Left: 1, 2, Right: 3, 4)
+    vector[2] MF = rep_vector(0.5,2); // model-free values
 
-  vector[T] deV1 = rep_vector(0, T); // difference in value, level 1
-  vector[T] deV2 = rep_vector(0, T); // difference in value, level 2
-  int m; // rep(a) value: 1 if a is a top-stage action and is the same one as was chosen on the previous trial
+    vector[T] deV1 = rep_vector(0, T); // difference in value, level 1
+    vector[T] deV2 = rep_vector(0, T); // difference in value, level 2
+    int m; // rep(a) value: 1 if a is a top-stage action and is the same one as was chosen on the previous trial
 
   // PRIORS
   // individual parameters
@@ -61,7 +60,7 @@ model {
   for (i in 1:T) {
 
     // Compute hybrid value
-    deV1[i] = w*(MB[2] - MB[1]) + (1-w)*(MF[2] - MF[1]);
+    deV1[i] = w*0.4*(fmax(Q[4], Q[3]) - fmax(Q[2], Q[1])) + (1-w)*(MF[2] - MF[1]);
 
     // Choice likelihood for level 1
     if (i > 1) {
@@ -73,19 +72,14 @@ model {
     // update second hybrid values - choice likelihood for level 2
     deV2[i] = Q[2 + (O[i]*2)] - Q[1 + (O[i]*2)];
 
-    // Update Q-values
-    Q[(O[i]*2) + (Y[i,2] + 1)] += eta2 * (reward[i] - Q[(O[i]*2) + (Y[i,2] + 1)]);
-
     // Y[i,2] -- say what was chosen in stage 2
     // O[i] -- tell us which stage that was in
 
     // Model-free update
-    MF[Y[i,1]+1] += eta1*(reward[i] - Q[(O[i]*2) + (Y[i,2] + 1)]);
+    MF[Y[i,1]+1] += eta1*(reward[i] - Q[(O[i]*2) + (Y[i,2] + 1)]) + eta1*(Q[(O[i]*2) + (Y[i,2] + 1)] - MF[Y[i,1]+1]);
 
-
-    // Model-based update
-    MB[1] += 0.7*fmax(Q[2], Q[1]) + 0.3*fmax(Q[4], Q[3]);
-    MB[2] += 0.7*fmax(Q[4], Q[3]) + 0.3*fmax(Q[2], Q[1]);
+    // Update Q-values (MB)
+    Q[(O[i]*2) + (Y[i,2] + 1)] += eta2 * (reward[i] - Q[(O[i]*2) + (Y[i,2] + 1)]);
 
   }
   // Assign likelihoods
