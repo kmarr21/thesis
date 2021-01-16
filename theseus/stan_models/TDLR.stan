@@ -59,9 +59,9 @@ model {
         // Observe level 2 
         // Choice likelihood for level 2
         // Left: O[i] = 0, Right: O[i] = 1
-        deV2[i] = Q[3 + (O[i]*2) + Y[i,2]] - Q[3 + (O[i]*2) + Y[i,2]];
+        deV2[i] = Q[4 + (O[i]*2)] - Q[3 + (O[i]*2)];
 
-        // O[i] = 0, —> 3 or 4
+        // O[i] = 0, —> 3 or 4 — 4 + (O[i]*2), 3 +
         // O[i] = 1 —> 5 or 6
 
         if (Y[i,1] == O[i]) {
