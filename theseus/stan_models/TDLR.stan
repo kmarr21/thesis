@@ -49,14 +49,11 @@ model {
 
     // Iterate through trials
     for (i in 1:T) {
-        // Compute Q values
-        Q[1] += 0.7*fmax(Q[3], Q[4]) + 0.3*fmax(Q[5], Q[6]);
-        Q[2] += 0.3*fmax(Q[3], Q[4]) + 0.7*fmax(Q[5], Q[6]);
 
-        // Choice likelihood for level 1
+        // Choice likelihood for stage 1
         deV1[i] = Q[2] - Q[1];
 
-        // Observe level 2 
+        // Observe stage 2 choice
         // Choice likelihood for level 2
         // Left: O[i] = 0, Right: O[i] = 1
         deV2[i] = Q[4 + (O[i]*2)] - Q[3 + (O[i]*2)];
@@ -72,6 +69,10 @@ model {
         // Update Q value of chosen option
         // Note: using assumption O[i] data comes in as 0 (left) or 1 (right) from stage 1 choice
         Q[3 + (O[i]*2) + Y[i,2]] += LR[i] * (reward[i] - Q[3 + (O[i]*2) + Y[i,2]]);
+
+        // Update Q values
+        Q[1] = 0.7*fmax(Q[3], Q[4]) + 0.3*fmax(Q[5], Q[6]);
+        Q[2] = 0.3*fmax(Q[3], Q[4]) + 0.7*fmax(Q[5], Q[6]);
     }
     // Assign likelihoods
     Y[:,1] ~ bernoulli_logit( beta1 * deV1);
