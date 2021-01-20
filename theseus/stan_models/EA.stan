@@ -47,8 +47,10 @@ model {
   vector[T] deV2 = rep_vector(0, T); // difference in value, level 2
 
   int ix; // index variable
-  int cr; // transition probability (common = 0.7, rare = 0.3)
-
+  real cr; // transition probability (common = 0.7, rare = 0.3)
+  real deltaC; // for chosen action
+  real deltaU; // for unchosen action
+  
   // PRIORS
   // individual parameters
   eta1_pr ~ normal(0,1);
