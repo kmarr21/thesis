@@ -62,7 +62,7 @@ model {
         // O[i] = 0, —> 3 or 4 — 4 + (O[i]*2), 3 +
         // O[i] = 1 —> 5 or 6
 
-        if (O[i]) {
+        if (O[i] == Y1[i]) {
             LR[i] = etaC; // common transition
         } else {
             LR[i] = etaR; // rare transition
