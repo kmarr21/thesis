@@ -74,7 +74,7 @@ model {
       deV2[i] = Qs2[ix] - Qs2[ix+1];
 
       // Update stage 2 Q-values
-      Qs2[Y2[i] + ix] += eta2 * (reward[i] - Qs2[Y2[i] + ix]);
+      Qs2[Y2[i] + ix] += eta2 * (R[i] - Qs2[Y2[i] + ix]);
 
       // Determine transition probability
       if(Y1[i] == S2[i]) {
@@ -124,7 +124,7 @@ generated quantities {
       Y2_pd += exp( bernoulli_logit_lpmf( Y2[i] | beta2 * (Qs2[ix] - Qs2[ix+1])) );
 
       // Update stage 2 Q-values
-      Qs2[Y2[i] + ix] += eta2 * (reward[i] - Qs2[Y2[i] + ix]);
+      Qs2[Y2[i] + ix] += eta2 * (R[i] - Qs2[Y2[i] + ix]);
 
       // Determine transition probability
       if(Y1[i] == S2[i]) {
