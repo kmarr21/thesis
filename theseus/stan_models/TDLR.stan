@@ -7,7 +7,7 @@ data {
 
     int<lower=0, upper=1> Y1[T]; // choice data for stage 1
     int<lower=0, upper=1> Y2[T]; // choice data for stage 2
-    int<lower=0, upper=1> O[T]; // outcome data for level 1 choice (1 = right, 0 = left)
+    int<lower=0, upper=1> S2[T]; // outcome data for level 1 choice (1 = right, 0 = left)
     int<lower=0, upper=1> reward[T]; // trial reward
 } 
 transformed data {
@@ -56,20 +56,20 @@ model {
 
         // Observe stage 2 choice
         // Choice likelihood for level 2
-        // Left: O[i] = 0, Right: O[i] = 1
-        deV2[i] = Q[4 + (O[i]*2)] - Q[3 + (O[i]*2)];
+        // Left: S2[i] = 0, Right: S2[i] = 1
+        deV2[i] = Q[4 + (S2[i]*2)] - Q[3 + (S2[i]*2)];
 
-        // O[i] = 0, —> 3 or 4 — 4 + (O[i]*2), 3 +
-        // O[i] = 1 —> 5 or 6
+        // S2[i] = 0, —> 3 or 4
+        // S2[i] = 1 —> 5 or 6
 
-        if (O[i] == Y1[i]) {
+        if (S2[i] == Y1[i]) {
             LR[i] = etaC; // common transition
         } else {
             LR[i] = etaR; // rare transition
         }
         // Update Q value of chosen option
         // Note: using assumption O[i] data comes in as 0 (left) or 1 (right) from stage 1 choice
-        Q[3 + (O[i]*2) + Y2[i]] += LR[i] * (reward[i] - Q[3 + (O[i]*2) + Y2[i]]);
+        Q[3 + (S2[i]*2) + Y2[i]] += LR[i] * (reward[i] - Q[3 + (S2[i]*2) + Y2[i]]);
 
         // Update Q values
         Q[1] = 0.7*fmax(Q[3], Q[4]) + 0.3*fmax(Q[5], Q[6]);
@@ -96,15 +96,15 @@ generated quantities {
             Y1_pd += exp( bernoulli_logit_lpmf( Y1[i] | beta1 * (Q[2] - Q[1]) ));
 
             // Stage 2 choice
-            Y2_pd += exp( bernoulli_logit_lpmf( Y2[i] | beta2 * (Q[4 + (O[i]*2)] - Q[3 + (O[i]*2)]) ));
+            Y2_pd += exp( bernoulli_logit_lpmf( Y2[i] | beta2 * (Q[4 + (S2[i]*2)] - Q[3 + (S2[i]*2)]) ));
 
-            if (O[i]) {
+            if (S2[i]) {
                 LR[i] = etaC; // common transition
             } else {
                 LR[i] = etaR; // rare transition
             }
             // Update Q value of chosen option
-            Q[3 + (O[i]*2) + Y2[i]] += LR[i] * (reward[i] - Q[3 + (O[i]*2) + Y2[i]]);
+            Q[3 + (S2[i]*2) + Y2[i]] += LR[i] * (reward[i] - Q[3 + (S2[i]*2) + Y2[i]]);
 
             // Update stage 1 Q values
             Q[1] = 0.7*fmax(Q[3], Q[4]) + 0.3*fmax(Q[5], Q[6]);
