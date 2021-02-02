@@ -47,10 +47,10 @@ model {
         V1[i] = MB[2] - MB[1];
         
         // Stage 2 choice
-        V2[i] = Q[S2[i], 2] - Q[S2[i], 1];
+        V2[i] = Q[S2[i]+1, 2] - Q[S2[i]+1, 1];
         
         // Update Q-values
-        Q[S2[i], Y2[i]+1] += eta_2 * ( R[i] - Q[S2[i], Y2[i]+1] );
+        Q[S2[i]+1, Y2[i]+1] += eta_2 * ( R[i] - Q[S2[i]+1, Y2[i]+1] );
         
         // Update MB values
         MB[1] = 0.7 * max(Q[1]) + 0.3 * max(Q[2]);
@@ -85,10 +85,10 @@ generated quantities {
         Y1_pd += exp( bernoulli_logit_lpmf( Y1[i] | beta_1 * (MB[2] - MB[1]) ) );
         
         // Stage 2 choice
-        Y2_pd += exp( bernoulli_logit_lpmf( Y2[i] | beta_2 * (Q[S2[i], 2] - Q[S2[i], 1]) ) );
+        Y2_pd += exp( bernoulli_logit_lpmf( Y2[i] | beta_2 * (Q[S2[i]+1, 2] - Q[S2[i]+1, 1]) ) );
         
         // Update Q-values
-        Q[S2[i], Y2[i]+1] += eta_2 * ( R[i] - Q[S2[i], Y2[i]+1] );
+        Q[S2[i]+1, Y2[i]+1] += eta_2 * ( R[i] - Q[S2[i]+1, Y2[i]+1] );
         
         // Update MB values
         MB[1] = 0.7 * max(Q[1]) + 0.3 * max(Q[2]);
