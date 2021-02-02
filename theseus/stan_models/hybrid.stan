@@ -13,8 +13,6 @@ data {
 parameters {
 
     // Hyperparameters (group parameters)
-    vector
-
     real  w_pr;
     real  beta_1_pr; 
     real  beta_2_pr;
