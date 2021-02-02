@@ -8,7 +8,7 @@ data {
     int<lower=0, upper=1> Y1[T]; // choice data for stage 1
     int<lower=0, upper=1> Y2[T]; // choice data for stage 2
     int<lower=0, upper=1> S2[T]; // outcome data for level 1 choice (1 = right, 0 = left)
-    int<lower=0, upper=1> reward[T]; // trial reward
+    int<lower=0, upper=1> R[T]; // trial reward
 } 
 transformed data {
     // 
@@ -69,7 +69,7 @@ model {
         }
         // Update Q value of chosen option
         // Note: using assumption O[i] data comes in as 0 (left) or 1 (right) from stage 1 choice
-        Q[3 + (S2[i]*2) + Y2[i]] += LR[i] * (reward[i] - Q[3 + (S2[i]*2) + Y2[i]]);
+        Q[3 + (S2[i]*2) + Y2[i]] += LR[i] * (R[i] - Q[3 + (S2[i]*2) + Y2[i]]);
 
         // Update Q values
         Q[1] = 0.7*fmax(Q[3], Q[4]) + 0.3*fmax(Q[5], Q[6]);
@@ -104,7 +104,7 @@ generated quantities {
                 LR[i] = etaR; // rare transition
             }
             // Update Q value of chosen option
-            Q[3 + (S2[i]*2) + Y2[i]] += LR[i] * (reward[i] - Q[3 + (S2[i]*2) + Y2[i]]);
+            Q[3 + (S2[i]*2) + Y2[i]] += LR[i] * (R[i] - Q[3 + (S2[i]*2) + Y2[i]]);
 
             // Update stage 1 Q values
             Q[1] = 0.7*fmax(Q[3], Q[4]) + 0.3*fmax(Q[5], Q[6]);
