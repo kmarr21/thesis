@@ -6,7 +6,7 @@ data {
   int<lower=0, upper=1> Y1[T]; // choice data for stage 1
   int<lower=0, upper=1> Y2[T]; // choice data for stage 2
   int<lower=0, upper=1> S2[T]; // outcome data for level 1 choice (1 = right, 0 = left)
-  int<lower=0, upper=1> reward[T]; // trial reward
+  int<lower=0, upper=1> R[T]; // trial reward
 }
 transformed data{
     // vectorize?
@@ -85,11 +85,11 @@ model {
       }
       // Update stage 1 Q-values
       // Chosen action
-      deltaC = reward[i] - Qs1[Y1[i] + 1];
+      deltaC = R[i] - Qs1[Y1[i] + 1];
       Qs1[Y1[i] + 1] += eta1 * (w * cr * deltaC + (1-w) * deltaC);
 
       // Unchosen action
-      deltaU = reward[i] - Qs1[(1-Y1[i]) + 1];
+      deltaU = R[i] - Qs1[(1-Y1[i]) + 1];
       Qs1[(1-Y1[i]) + 1] += eta1 * w * (1 - cr) * deltaU;
       
   }
@@ -135,11 +135,11 @@ generated quantities {
       }
       // Update stage 1 Q-values
       // Chosen action
-      deltaC = reward[i] - Qs1[Y1[i] + 1];
+      deltaC = R[i] - Qs1[Y1[i] + 1];
       Qs1[Y1[i] + 1] += eta1 * (w * cr * deltaC + (1-w) * deltaC);
 
       // Unchosen action
-      deltaU = reward[i] - Qs1[(1-Y1[i]) + 1];
+      deltaU = R[i] - Qs1[(1-Y1[i]) + 1];
       Qs1[(1-Y1[i]) + 1] += eta1 * w * (1 - cr) * deltaU;
 
     }
