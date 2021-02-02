@@ -6,7 +6,7 @@ data {
   int<lower=0, upper=1> Y1[T]; // stage 1 choice
   int<lower=0, upper=1> Y2[T]; // stage 2 choice
   int<lower=0, upper=1> S2[T]; // outcome data for level 1 choice (1 = right, 0 = left)
-  int<lower=0, upper=1> reward[T]; // trial reward
+  int<lower=0, upper=1> R[T]; // trial reward
 }
 transformed data{
     // vectorize?
@@ -77,10 +77,10 @@ model {
     // O[i] -- tell us which stage that was in
 
     // Model-free update
-    MF[Y1[i]+1] += eta1*(reward[i] - Q[(S2[i]*2) + (Y2[i] + 1)]) + eta1*(Q[(S2[i]*2) + (Y2[i] + 1)] - MF[Y1[i]+1]);
+    MF[Y1[i]+1] += eta1*(R[i] - Q[(S2[i]*2) + (Y2[i] + 1)]) + eta1*(Q[(S2[i]*2) + (Y2[i] + 1)] - MF[Y1[i]+1]);
 
     // Update Q-values (MB)
-    Q[(S2[i]*2) + (Y2[i] + 1)] += eta2 * (reward[i] - Q[(S2[i]*2) + (Y2[i] + 1)]);
+    Q[(S2[i]*2) + (Y2[i] + 1)] += eta2 * (R[i] - Q[(S2[i]*2) + (Y2[i] + 1)]);
 
   }
   // Assign likelihoods
@@ -122,10 +122,10 @@ generated quantities {
       Y2_pd += exp( bernoulli_logit_lpmf( Y2[i] | beta_2 * s2_prob ) );
 
       // Model-free update
-      MF[Y1[i]+1] += eta1*(reward[i] - Q[(S2[i]*2) + (Y2[i] + 1)]) + eta1*(Q[(S2[i]*2) + (Y2[i] + 1)] - MF[Y1[i]+1]);
+      MF[Y1[i]+1] += eta1*(R[i] - Q[(S2[i]*2) + (Y2[i] + 1)]) + eta1*(Q[(S2[i]*2) + (Y2[i] + 1)] - MF[Y1[i]+1]);
 
       // Update Q-values (MB)
-      Q[(S2[i]*2) + (Y2[i] + 1)] += eta2 * (reward[i] - Q[(S2[i]*2) + (Y2[i] + 1)]);
+      Q[(S2[i]*2) + (Y2[i] + 1)] += eta2 * (R[i] - Q[(S2[i]*2) + (Y2[i] + 1)]);
     }
     // Normalize
     Y1_pd /= T;
