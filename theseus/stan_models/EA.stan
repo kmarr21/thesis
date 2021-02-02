@@ -5,7 +5,7 @@ data {
 
   int<lower=0, upper=1> Y1[T]; // choice data for stage 1
   int<lower=0, upper=1> Y2[T]; // choice data for stage 2
-  int<lower=0, upper=1> O[T]; // outcome data for level 1 choice (1 = right, 0 = left)
+  int<lower=0, upper=1> S2[T]; // outcome data for level 1 choice (1 = right, 0 = left)
   int<lower=0, upper=1> reward[T]; // trial reward
 }
 transformed data{
@@ -77,7 +77,7 @@ model {
       Qs2[Y2[i] + ix] += eta2 * (reward[i] - Qs2[Y2[i] + ix]);
 
       // Determine transition probability
-      if(Y1[i] == O[i]) {
+      if(Y1[i] == S2[i]) {
         cr = 0.7;
       }
       else {
@@ -127,7 +127,7 @@ generated quantities {
       Qs2[Y2[i] + ix] += eta2 * (reward[i] - Qs2[Y2[i] + ix]);
 
       // Determine transition probability
-      if(Y1[i] == O[i]) {
+      if(Y1[i] == S2[i]) {
         cr = 0.7;
       }
       else {
