@@ -79,39 +79,3 @@ model {
     Y1 ~ bernoulli_logit( beta1 * deV1);
     Y2 ~ bernoulli_logit( beta2 * deV2 );
 }
-generated quantities {
-    // Choice likelihood
-    real Y1_pd = 0.;
-    real Y2_pd = 0.;
-
-    // Likelihood block
-    {
-        // Preallocate space
-        vector[6] Q = rep_vector(0.5,6);
-        vector[T] LR = rep_vector(0, T);
-
-        // Main loop
-        for (i in 1:T) {
-            // Stage 1 choice
-            Y1_pd += exp( bernoulli_logit_lpmf( Y1[i] | beta1 * (Q[2] - Q[1]) ));
-
-            // Stage 2 choice
-            Y2_pd += exp( bernoulli_logit_lpmf( Y2[i] | beta2 * (Q[4 + (S2[i]*2)] - Q[3 + (S2[i]*2)]) ));
-
-            if (S2[i]) {
-                LR[i] = etaC; // common transition
-            } else {
-                LR[i] = etaR; // rare transition
-            }
-            // Update Q value of chosen option
-            Q[3 + (S2[i]*2) + Y2[i]] += LR[i] * (R[i] - Q[3 + (S2[i]*2) + Y2[i]]);
-
-            // Update stage 1 Q values
-            Q[1] = 0.7*fmax(Q[3], Q[4]) + 0.3*fmax(Q[5], Q[6]);
-            Q[2] = 0.3*fmax(Q[3], Q[4]) + 0.7*fmax(Q[5], Q[6]);
-        }
-        // Normalize
-        Y1_pd /= T;
-        Y2_pd /= T;
-    }
-}
