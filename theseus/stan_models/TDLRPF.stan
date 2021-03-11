@@ -16,6 +16,8 @@ parameters {
     real beta2_pr;
     real etaC_pr; 
     real etaR_pr;
+    real etaF_pr;
+    real p_pr;
 }
 transformed parameters {
     // 
@@ -23,11 +25,15 @@ transformed parameters {
     real<lower=0, upper=20> beta2;
     real<lower=0, upper=1> etaC;
     real<lower=0, upper=1> etaR;
+    real<lower=0, upper=1> etaF;
+    real p;
 
     beta1 = Phi_approx(beta1_pr) * 10;
     beta2 = Phi_approx(beta2_pr) * 10;
     etaC = Phi_approx (etaC_pr);
     etaR = Phi_approx (etaR_pr);
+    etaF = Phi_approx (etaF_pr);
+    p = Phi_approx (p_pr);
 }
 model {
 
@@ -36,6 +42,8 @@ model {
     beta2_pr ~ std_normal(); 
     etaC_pr ~ std_normal();
     etaR_pr ~ std_normal();
+    etaF_pr ~ std_normal();
+    p_pr ~ std_normal();
 
     // Likelihood block 
     {
@@ -46,12 +54,20 @@ model {
     vector[T] deV1 = rep_vector(0, T); // difference in value, level 1
     vector[T] deV2 = rep_vector(0, T); // difference in value, level 2
     vector[T] LR = rep_vector(0, T); // trial learning rate: can be common or rare 
+    int m;
 
     // Iterate through trials
     for (i in 1:T) {
 
         // Choice likelihood for stage 1
         deV1[i] = Q[2] - Q[1];
+
+        if (i > 1) {
+            // m = 1 (if first stage and same as previous trial), otherwise m = 0
+            m = 1 ? (Y1[i-1] == 1): -1; // ternary conditional operator
+            #m = ((Y1[i-1] == 1) : 1 ? -1);
+            deV1[i] += p*m;
+        }
 
         // Observe stage 2 choice
         // Choice likelihood for level 2
@@ -66,9 +82,13 @@ model {
         } else {
             LR[i] = etaR; // rare transition
         }
-        // Update Q value of chosen option
-        // Note: using assumption O[i] data comes in as 0 (left) or 1 (right) from stage 1 choice
+        // Chosen Action update
         Q[3 + (S2[i]*2) + Y2[i]] += LR[i] * (R[i] - Q[3 + (S2[i]*2) + Y2[i]]);
+
+        // Unchosen Action update
+        Q[3 + (S2[i]*2) + (1-Y2[i])] += etaF * (0 - Q[3 + (S2[i]*2) + (1-Y2[i])]);
+        Q[1 + (S2[i]*2) + (1-Y2[i])] += etaF * (0 - Q[1 + (S2[i]*2) + (1-Y2[i])]);
+        Q[1 + (S2[i]*2) + Y2[i]] += etaF * (0 - Q[1 + (S2[i]*2) + Y2[i]]);
 
         // Update Q values
         Q[1] = 0.7*fmax(Q[3], Q[4]) + 0.3*fmax(Q[5], Q[6]);

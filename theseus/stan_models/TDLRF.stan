@@ -16,6 +16,7 @@ parameters {
     real beta2_pr;
     real etaC_pr; 
     real etaR_pr;
+    real etaF_pr;
 }
 transformed parameters {
     // 
@@ -23,11 +24,13 @@ transformed parameters {
     real<lower=0, upper=20> beta2;
     real<lower=0, upper=1> etaC;
     real<lower=0, upper=1> etaR;
+    real<lower=0, upper=1> etaF;
 
     beta1 = Phi_approx(beta1_pr) * 10;
     beta2 = Phi_approx(beta2_pr) * 10;
     etaC = Phi_approx (etaC_pr);
     etaR = Phi_approx (etaR_pr);
+    etaF = Phi_approx (etaF_pr);
 }
 model {
 
@@ -36,6 +39,7 @@ model {
     beta2_pr ~ std_normal(); 
     etaC_pr ~ std_normal();
     etaR_pr ~ std_normal();
+    etaF_pr ~ std_normal();
 
     // Likelihood block 
     {
@@ -66,9 +70,13 @@ model {
         } else {
             LR[i] = etaR; // rare transition
         }
-        // Update Q value of chosen option
-        // Note: using assumption O[i] data comes in as 0 (left) or 1 (right) from stage 1 choice
+        // Chosen Action update
         Q[3 + (S2[i]*2) + Y2[i]] += LR[i] * (R[i] - Q[3 + (S2[i]*2) + Y2[i]]);
+
+        // Unchosen Action update
+        Q[3 + (S2[i]*2) + (1-Y2[i])] += etaF * (0 - Q[3 + (S2[i]*2) + (1-Y2[i])]);
+        Q[1 + (S2[i]*2) + (1-Y2[i])] += etaF * (0 - Q[1 + (S2[i]*2) + (1-Y2[i])]);
+        Q[1 + (S2[i]*2) + Y2[i]] += etaF * (0 - Q[1 + (S2[i]*2) + Y2[i]]);
 
         // Update Q values
         Q[1] = 0.7*fmax(Q[3], Q[4]) + 0.3*fmax(Q[5], Q[6]);
