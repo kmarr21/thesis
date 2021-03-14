@@ -69,11 +69,11 @@ model {
     // Main loop
     for (i in 1:T) {
         // Toyama Perseveration: choice trace and decay rate
-        CT[Y1[i]] = (1-d) * CT[Y1[i]] + d;
-        CT[1-Y1[i]] = (1-d) * CT[1-Y1[i]];
+        CT[1+Y1[i]] = (1-d) * CT[1+Y1[i]] + d;
+        CT[1+(1-Y1[i])] = (1-d) * CT[1+(1-Y1[i])];
     
         // Stage 1 choice + perseveration
-        V1[i] = (Q1[2] - Q1[1]) + p*CT[Y1[i]];
+        V1[i] = (Q1[2] - Q1[1]) + p*CT[1+Y1[i]];
         
         // Stage 2 choice
         V2[i] = Q2[S2[i]+1, 2] - Q2[S2[i]+1, 1];
